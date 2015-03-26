@@ -1,0 +1,169 @@
+<load target="css/layout.default.css" />
+<load target="css/widget.login.css" />
+<load target="css/ico.style.css" />
+
+<load target="js/layout.default.js" />
+
+<style>
+<!--@if($layout_info->layout_type==sub_left)-->
+.lnb>ul a:hover:after,
+.lnb>ul a:focus:after{position:absolute;right:16px;content:'>'}
+<!--@else-->
+.lnb>ul a:hover:after,
+.lnb>ul a:focus:after{position:absolute;left:16px;content:'<'}
+<!--@end-->
+</style>
+
+<div class="container">
+	<p class="skip"><a href="#content">{$lang->skip_to_content}</a></p>
+	<div class="header_line">
+		<header class="header">
+			<div class="login_area">
+				<!-- before_login -->
+				<!--@if(!$is_logged)-->
+				<a href="#modal_login" name="modal_login"><i class="xe-user"></i><span class="blind">로그인/회원가입</span></a>
+				<div class="ly_login">
+					<ul>
+						<li><a href="#modal_login" name="modal_login">{$lang->cmd_login}</a></li>
+						<li><a href="{getUrl('act','dispMemberSignUpForm')}">{$lang->cmd_signup}</a></li>
+					</ul>
+					<span class="edge"></span>
+				</div>
+				<!--@else-->
+				<!-- /before_login -->
+               
+				<!-- after_login -->
+				<!-- [D] 프로필 이미지를 등록하지 않았을 경우 기본 이미지 노출, alt 속성에는 프로필명 적용  -->
+				<a href="#" class="login_after">
+					<!--@if($logged_info->profile_image->src)-->
+					<img src="{$logged_info->profile_image->src}" alt="{$logged_info->nick_name}님 프로필">
+					<!--@else-->
+					<img src="./img/ico_default.jpg" alt="">
+					<!--@end-->
+				</a>
+			
+				<div class="ly ly_login">
+					<ul>
+						<li loop="$logged_info->menu_list=>$key, $val"><a href="{getUrl('act',$key,'member_srl','')}">{Context::getLang($val)}</a></li>
+						<li class="logout"><a cond="$is_logged" href="{getUrl('act','dispMemberLogout')}">{$lang->cmd_logout}</a></li>
+					</ul>
+					<span class="edge"></span>
+				</div>
+				<!--@end-->
+				<!-- /after_login -->
+			</div>
+		
+			<div class="manage_area" cond="$grant->manager">
+				<a href="{getUrl('','module','admin')}" target="_blank"><i class="xe-tool"></i><span class="blind">관리</span></a>
+			</div>
+	
+			<div class="logo">
+				<a href="{getUrl('')}">
+					<img cond="$layout_info->logo_image" src="{$layout_info->logo_image}" alt="{$layout_info->logo_title}" />
+					<block cond="!$layout_info->logo_image">{$layout_info->logo_title}</block>
+				</a>
+				<p class="sub_logo">{$layout_info->logo_title_sub}</p>
+			</div>
+		</div>
+
+		<div class="gnb_wrp">
+			<div>
+				<!-- GNB -->
+				<nav class="gnb">
+					<ul>
+						<li loop="$gnb->list=>$key1,$val1">
+							<a href="{$val1['href']}" class="tri"|cond="$val1['list']">{$val1['link']}</a>
+							<block cond="$val1['list']">
+							<ul class="depth2">
+								<li loop="$val1['list']=>$key2,$val2">
+									<a href="{$val2['href']}">{$val2['link']}</a>
+								</li>
+							</ul>
+							</block>
+						</li>
+					</ul>
+			
+					<form method="get" action="{getUrl()}" class="search">
+						<input type="hidden" name="vid" value="{$vid}" />
+						<input type="hidden" name="mid" value="{$mid}" />
+						<input type="hidden" name="act" value="IS" />
+						<input type="text" name="is_keyword" value="{$is_keyword}" placeholder="{$lang->cmd_search}" />
+					</form>
+				</nav>
+				<!-- /GNB -->
+			</div>
+		</header>
+	</div>
+
+	<div class="body<!--@if($layout_info->layout_type==sub_left)--> sub<!--@elseif($layout_info->layout_type==sub_right)--> sub right<!--@elseif($layout_info->layout_type==sub_full)--> sub full<!--@end-->">
+		<div class="sidebar" cond="$layout_info->layout_type!='sub_full'">
+			<ul class="tabs">
+				<li><a href="#tab1"><i class="xe-list-ul-l"></i> 메뉴</a></li>
+				<li><a href="#tab2"><i class="xe-documents"></i> 위젯</a></li>
+			</ul>
+ 
+			<div class="tab_container">
+				<div id="tab1" class="tab_content">
+					<!-- LNB -->
+					<nav class="lnb">
+						<ul>
+							<li loop="$gnb->list=>$key1,$val1" class="on"|cond="$val1['selected']">
+								<a href="{$val1['href']}">{$val1['link']}</a>
+								<block cond="$val1['list']">
+								<ul class="depth2">
+									<li loop="$val1['list']=>$key2,$val2" class="on"|cond="$val2['selected']">
+										<a href="{$val2['href']}">{$val2['link']}</a>
+									</li>
+								</ul>
+								</block>
+							</li>
+						</ul>
+					</nav>
+					<!-- /LNB -->
+				</div>
+				<div id="tab2" class="tab_content">
+					<!--Content-->위젯 추가 
+				</div>
+			</div>
+		</div>
+		
+		<div class="content_wrap">
+			<!-- SUB TITLE -->
+			<div class="sub_title">
+				<h1>{$module_info->browser_title}</h1>
+				<ul class="page_location">
+					<li><a href="{getUrl()}">Home</a></li>
+					<block loop="$gnb->list=>$key1,$val1" cond="$val1['selected']">
+					<li><a href="{$val1['href']}">{$val1['text']}</a>
+					<block loop="$val1['list']=>$key2,$val2" cond="$val2['selected']">
+					<li><a href="{$val2['href']}">{$val2['text']}</a>
+					<block loop="$val2['list']=>$key3,$val3" cond="$val3['selected']">
+					<li class="last"><a href="{$val3['href']}">{$val3['text']}</a>
+					</block>
+					</block>
+					</block>
+				</ul>
+			</div>
+			<!-- /SUB TITLE -->  
+			<!-- CONTENT -->
+			<div class="content">
+				{$content}
+			</div>
+			<!-- /CONTENT -->
+		</div>
+	</div>
+
+	<div id="footer">
+		<div class="container">
+			<p class="copyright"><!--@if($layout_info->maker)-->{$layout_info->maker}<!--@else--><a href="http://grace.nflint.com/" target="_blank">아이쿠!!</a><!--@end--></p>
+			<ul class="copyright_links">
+				<li loop="$footer_menu->list=>$key1,$val1" cond="$val1['link']">
+					<a href="{$val1['href']}" target="_blank"|cond="$val1['open_window']=='Y'">{$val1['link']}</a>
+				</li>
+			</ul>
+		</div>
+	</div>
+</div>
+<a href="#" class="btn_top"><i class="xe-angle-up"><span class="blind">위로가기</span></i></a>
+
+<include target="login.html" />
